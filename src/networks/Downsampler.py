@@ -5,7 +5,15 @@ import logging
 from networks.LayerNorms import GRN
 
 class DownSampler(nn.Module):
-    def __init__(self, resolution: int, in_channels: int, hidden_channels: int, out_channels: int, kernel_size: int, stride: int, pooling:nn.Module=None, dense: bool=False) -> None:
+    def __init__(self, resolution: int,
+                 in_channels: int,
+                 hidden_channels: int,
+                 out_channels: int,
+                 dilations_len: int,
+                 kernel_size: int,
+                 stride: int,
+                 pooling:nn.Module=None,
+                 dense: bool=False) -> None:
         super(DownSampler, self).__init__()
         self.in_channels = in_channels
         self.hidden_channels = hidden_channels
@@ -14,6 +22,7 @@ class DownSampler(nn.Module):
         self.pooling = pooling
         self.kernel_size = kernel_size
         self.stride = stride
+        self.dilations_len = dilations_len
 
         self.dense = dense
         self.dense_channels = in_channels + hidden_channels
@@ -23,7 +32,7 @@ class DownSampler(nn.Module):
         self.batch_norm = None
         self.activation = None
         if self.dense:
-            self.dense_fc = nn.Conv2d(self.dense_channels, out_channels, kernel_size=1, stride=1, groups=self.dense_channels // 8)
+            self.dense_fc = nn.Conv2d(self.dense_channels, out_channels, kernel_size=1, stride=1, groups=self.dense_channels // (2 * self.dilations_len))
             self.activation = nn.ReLU6()
             self.batch_norm = nn.BatchNorm2d(self.out_channels)
 
@@ -54,9 +63,8 @@ class DownSampler(nn.Module):
             # Recombine channel dimension to have
             # fmaps from different dilations grouped
             B, C, H, W = x.shape
-            dil_groups = 4
-            group_size = C // dil_groups
-            x = x.view(B, dil_groups, group_size, H, W)
+            group_size = C // self.dilations_len
+            x = x.view(B, self.dilations_len, group_size, H, W)
             x.swapaxes_(1, 2)
             x = x.reshape(B, C, H, W)
 

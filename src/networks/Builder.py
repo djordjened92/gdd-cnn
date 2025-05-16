@@ -94,7 +94,7 @@ class GroupedDilationStage(nn.Module):
                                       dilations=dilations))
 
         self.stage = nn.Sequential(*self.layers)
-        self.downsampler = DownSampler(resolution, in_channels, hidden_channels, out_channels, kernel_size=2, stride=2, pooling=pooling, dense=dense) if downsample else nn.Identity()
+        self.downsampler = DownSampler(resolution, in_channels, hidden_channels, out_channels, len(dilations), kernel_size=2, stride=2, pooling=pooling, dense=dense) if downsample else nn.Identity()
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         out = self.stage(x)

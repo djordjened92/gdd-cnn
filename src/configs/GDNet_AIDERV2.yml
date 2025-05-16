@@ -5,7 +5,7 @@ num_epochs: 300
 batch_size: 64
 seed: 22
 experiment_name: GDNet_AIDERV2
-main_runs_folder: /home/user/src/runs
+main_runs_folder: /home/user/src/runs/AIDERV2
 pin_memory: False
 mode: train
 
