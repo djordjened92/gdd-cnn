@@ -32,25 +32,41 @@ def train(args: argparse.Namespace) -> None:
                            seed=args.seed,  
                            split=args.split,
                            k_folds=args.k_folds,
-                           no_validation=args.no_validation,
-                           )
+                           no_validation=args.no_validation)
     
     valset = get_dataset(dataset=args.dataset, 
-                        data_path=args.data_path, 
-                        target_size=target_size,  
-                        num_classes=args.num_classes,
-                        subset='val', 
-                        seed=args.seed, 
-                        split=args.split,
-                        k_folds=args.k_folds,
-                        no_validation=args.no_validation,
-                        )
+                         data_path=args.data_path, 
+                         target_size=target_size,  
+                         num_classes=args.num_classes,
+                         subset='val', 
+                         seed=args.seed, 
+                         split=args.split,
+                         k_folds=args.k_folds,
+                         no_validation=args.no_validation)
 
     if args.num_classes != trainset.num_classes:
         raise ValueError(f"Number of classes in config file ({args.num_classes}) does not match the number of classes in the dataset ({trainset.num_classes})")
     
-    train_loader = get_dataloader(trainset, target_size, args.batch_size, True, 'train', transforms, args.num_workers, args.persistent_workers, args.pin_memory, device)
-    val_loader = get_dataloader(valset, target_size, args.batch_size, False, 'val', transforms, args.num_workers, args.persistent_workers, args.pin_memory, device)
+    train_loader = get_dataloader(dataset=trainset,
+                                  target_size=target_size,
+                                  batch_size=args.batch_size,
+                                  shuffle=True,
+                                  subset='train',
+                                  transforms=transforms,
+                                  num_workers=args.num_workers,
+                                  persistent_workers=args.persistent_workers,
+                                  pin_memory=args.pin_memory,
+                                  device=device)
+    val_loader = get_dataloader(dataset=valset,
+                                target_size=target_size,
+                                batch_size=args.batch_size,
+                                shuffle=False,
+                                subset='val',
+                                transforms=transforms,
+                                num_workers=args.num_workers,
+                                persistent_workers=args.persistent_workers,
+                                pin_memory=args.pin_memory,
+                                device=device)
 
     net_kwargs = extract_net_params(args)
     optim_kwargs = extract_optim_params(args)

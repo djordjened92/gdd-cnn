@@ -32,27 +32,34 @@ def test(trainer, model, args: argparse.Namespace) -> None:
         print("Testing model from checkpoint", args.ckpts_path)
         load_ckps = True
 
-    subset = 'test'
     target_size = (args.img_height, args.img_width)
 
     device = torch.device(f"cuda:{str(get_rank())}" if torch.cuda.is_available() else "cpu")
     args.accelerator = 'gpu' if torch.cuda.is_available() else 'cpu'
 
-    testset = get_dataset(dataset=args.dataset, 
-                        data_path=args.data_path, 
-                        target_size=target_size, 
-                        num_classes=args.num_classes,
-                        subset=subset, 
-                        seed=args.seed, 
-                        split=args.split,
-                        k_folds=args.k_folds,
-                        no_validation=args.no_validation,
-                        )
+    testset = get_dataset(dataset=args.dataset,
+                          data_path=args.data_path,
+                          target_size=target_size,
+                          num_classes=args.num_classes,
+                          subset='test',
+                          seed=args.seed,
+                          split=args.split,
+                          k_folds=args.k_folds,
+                          no_validation=args.no_validation)
 
     if args.num_classes != testset.num_classes:
         raise ValueError(f"Number of classes in config file ({args.num_classes}) does not match the number of classes in the dataset ({testset.num_classes})")
     
-    test_loader = get_dataloader(testset, target_size, args.batch_size, False, subset, None, args.num_workers, args.persistent_workers, args.pin_memory, device)
+    test_loader = get_dataloader(dataset=testset,
+                                 target_size=target_size,
+                                 batch_size=args.batch_size,
+                                 shuffle=False,
+                                 subset='test',
+                                 transforms=None,
+                                 num_workers=args.num_workers,
+                                 persistent_workers=args.persistent_workers,
+                                 pin_memory=args.pin_memory,
+                                 device=device)
     
     net_kwargs = extract_net_params(args)
     optim_kwargs = extract_optim_params(args)

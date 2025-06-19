@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+import random
 import torchvision
 from torchvision.datasets import DatasetFolder, FakeData
 from torch.utils.data import DataLoader
@@ -35,14 +36,24 @@ class CollateFnWrapper:
         images = images / 255.
         return images, labels
 
-def get_dataloader(dataset: DatasetFolder, target_size: tuple, batch_size: int, shuffle: bool, subset: str, transforms: AlbuCompose, num_workers: int, persistent_workers: bool, pin_memory: bool, device: torch.device):
+def get_dataloader(dataset: DatasetFolder,
+                   target_size: tuple,
+                   batch_size: int,
+                   shuffle: bool,
+                   subset: str,
+                   transforms: AlbuCompose,
+                   num_workers: int,
+                   persistent_workers: bool,
+                   pin_memory: bool,
+                   device: torch.device):
     collate_fn = CollateFnWrapper(target_size, subset=subset, transforms=transforms, device=device)
-    dataloader = DataLoader(dataset, \
-                            batch_size=batch_size, \
-                            shuffle=shuffle, \
-                            num_workers=num_workers, \
-                            persistent_workers=persistent_workers, \
-                            pin_memory=pin_memory, \
+
+    dataloader = DataLoader(dataset,
+                            batch_size=batch_size,
+                            shuffle=shuffle,
+                            num_workers=num_workers,
+                            persistent_workers=persistent_workers,
+                            pin_memory=pin_memory,
                             collate_fn=collate_fn)
     return dataloader
     
