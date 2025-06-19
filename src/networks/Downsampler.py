@@ -12,8 +12,7 @@ class DownSampler(nn.Module):
                  dilations_len: int,
                  kernel_size: int,
                  stride: int,
-                 pooling:nn.Module=None,
-                 dense: bool=False) -> None:
+                 pooling:nn.Module=None) -> None:
         super(DownSampler, self).__init__()
         self.in_channels = in_channels
         self.hidden_channels = hidden_channels
@@ -35,12 +34,9 @@ class DownSampler(nn.Module):
         if pooling is None or pooling == nn.Identity:
             self.downsampler = nn.Identity()
         elif pooling == nn.Conv2d:
-            self.downsampler = nn.Conv2d(self.downsampler_channels, out_channels, kernel_size=2, stride=2, groups=out_channels if self.dense else 1, bias=False)
+            self.downsampler = nn.Conv2d(self.downsampler_channels, out_channels, kernel_size=2, stride=2, groups=out_channels, bias=False)
         elif pooling == nn.MaxPool2d or pooling == nn.AvgPool2d:
-            self.downsampler = nn.Sequential(
-                nn.Conv2d(self.downsampler_channels, out_channels, kernel_size=1, stride=1, bias=False) if not self.dense else nn.Identity(),
-                pooling(kernel_size, stride),
-            )
+            self.downsampler = pooling(kernel_size, stride)
         
         self.grn = GRN(self.out_channels)
 
