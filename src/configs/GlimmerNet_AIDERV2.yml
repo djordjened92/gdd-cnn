@@ -4,37 +4,36 @@
 num_epochs: 300
 batch_size: 64
 seed: 22
-experiment_name: TakuNet_AIDER
-main_runs_folder: /home/user/src/runs
+experiment_name: GlimmerNet_AIDERV2
+main_runs_folder: /home/user/src/runs/AIDERV2
 pin_memory: False
-mode: test
+mode: train
 
 # Logging
 tensorboard: True
 wandb: False # if True, you need to set the WANDB_API_KEY environment variable
 
 # Dataset and Data loading
-num_workers: 0
-persistent_workers: False
-dataset: AIDER
-data_path: /home/user/Data/AIDER
-num_classes: 5
-img_height: 240
-img_width: 240
+num_workers: 12
+persistent_workers: True
+dataset: AIDERV2
+data_path: ./data/AIDERV2
+num_classes: 4
+img_height: 224
+img_width: 224
 augment: AIDER
 k_folds: 0
 split: proportional
 no_validation: True
 
 # Pytorch Lightning Precision
-lightning_precision: 16-mixed #32-true
+lightning_precision: 32-true
 
 # Model settings
-network: TakuNet
+network: GDNet
 input_channels: 3
-dense: True
 stem_reduction: 4
-ckpts_path: ckpts/TakuNet_AIDER.ckpt
+ckpts_path: runs/GDNet_AIDERV2/version_40/checkpoints/best_model_val_loss.ckpt
 
 # Optimization parameters
 optimizer: rmsprop

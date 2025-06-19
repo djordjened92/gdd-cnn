@@ -8,16 +8,16 @@ from networks.Modules import Stem, GroupedDilationBlock
 from networks.LightningNet import LightningNet
 from networks.Downsampler import DownSampler
 
-class GroupedDilationNet(LightningNet):
-    r""" GroupedDilationNet
+class GlimmerNet(LightningNet):
+    r""" GlimmerNet
     """
     def __init__(self, 
                 net_kwargs: dict,
                 criterion: nn.Module,
                 optim_kwargs:dict,
                 ):
-        super(GroupedDilationNet, self).__init__(net_kwargs, criterion, optim_kwargs)
-        logging.info(f"Building GroupedDilationNet with {net_kwargs}")
+        super(GlimmerNet, self).__init__(net_kwargs, criterion, optim_kwargs)
+        logging.info(f"Building GlimmerNet with {net_kwargs}")
 
         self.input_channels = net_kwargs["input_channels"]
         self.output_classes = net_kwargs["output_classes"]
@@ -25,7 +25,6 @@ class GroupedDilationNet(LightningNet):
         self.widths = net_kwargs["widths"]
         self.dilations = net_kwargs["dilations"]
         self.poolings = net_kwargs["poolings"]
-        self.dense = net_kwargs["dense"]
         self.net_modules = net_kwargs["modules"]
         self.reduction = net_kwargs["stem_reduction"]
         self.resolution = net_kwargs["resolution"]
@@ -42,7 +41,6 @@ class GroupedDilationNet(LightningNet):
             out_channels = self.widths[i + 1] if i < len(self.depths) - 1 else self.widths[i]
             
             prev_channel_dim = self.widths[i]
-            downsample = True
             self.stages.append(GroupedDilationStage(self.net_modules[i],
                                                     curr_resolution,
                                                     prev_channel_dim,
@@ -50,9 +48,7 @@ class GroupedDilationNet(LightningNet):
                                                     out_channels,
                                                     depth,
                                                     self.dilations[i],
-                                                    self.poolings[i],
-                                                    dense=self.dense,
-                                                    downsample=downsample))
+                                                    self.poolings[i]))
             curr_resolution = self.stages[i + 1].downsampler.get_output_resolution()
 
         self.backbone = nn.Sequential(*self.stages)
@@ -79,10 +75,9 @@ class GroupedDilationNet(LightningNet):
         return x
 
 class GroupedDilationStage(nn.Module):
-    def __init__(self, module: nn.Module, resolution: int, in_channels: int, hidden_channels: int, out_channels: int, depth: int, dilations: list, pooling: nn.Module=None, dense: bool=False, downsample: bool=True) -> None:
+    def __init__(self, module: nn.Module, resolution: int, in_channels: int, hidden_channels: int, out_channels: int, depth: int, dilations: list, pooling: nn.Module=None) -> None:
         super(GroupedDilationStage, self).__init__()
         self.layers = nn.ModuleList()
-        self.downsample = downsample
 
         for i in range(depth):
             cur_in_channels = in_channels if i == 0 else hidden_channels
@@ -94,12 +89,11 @@ class GroupedDilationStage(nn.Module):
                                       dilations=dilations))
 
         self.stage = nn.Sequential(*self.layers)
-        self.downsampler = DownSampler(resolution, in_channels, hidden_channels, out_channels, len(dilations), kernel_size=2, stride=2, pooling=pooling, dense=dense) if downsample else nn.Identity()
+        self.downsampler = DownSampler(resolution, in_channels, hidden_channels, out_channels, len(dilations), kernel_size=2, stride=2, pooling=pooling)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         out = self.stage(x)
-        if self.downsample:
-            out = self.downsampler(out, dense_x=x)
+        out = self.downsampler(out, dense_x=x)
         return out
 
 def create_gdnet(net_kwargs: dict, criterion: nn.Module, optim_kwargs:dict, ckpt_path: str = None):
@@ -110,8 +104,8 @@ def create_gdnet(net_kwargs: dict, criterion: nn.Module, optim_kwargs:dict, ckpt
     net_kwargs['poolings'] = [nn.MaxPool2d, nn.MaxPool2d, nn.MaxPool2d, nn.AvgPool2d]
 
     if ckpt_path is not None:
-        model = GroupedDilationNet.load_from_checkpoint(ckpt_path, net_kwargs=net_kwargs, criterion=criterion, optim_kwargs=optim_kwargs)
+        model = GlimmerNet.load_from_checkpoint(ckpt_path, net_kwargs=net_kwargs, criterion=criterion, optim_kwargs=optim_kwargs)
     else:
-        model = GroupedDilationNet(net_kwargs, criterion, optim_kwargs)
+        model = GlimmerNet(net_kwargs, criterion, optim_kwargs)
 
     return model

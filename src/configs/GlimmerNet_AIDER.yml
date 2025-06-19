@@ -4,23 +4,23 @@
 num_epochs: 300
 batch_size: 64
 seed: 22
-experiment_name: GDNet_AIDERV2
-main_runs_folder: /home/user/src/runs/AIDERV2
+experiment_name: GlimmerNet_AIDERV
+main_runs_folder: /home/user/src/runs/AIDER
 pin_memory: False
-mode: train
+mode: test
 
 # Logging
 tensorboard: True
 wandb: False # if True, you need to set the WANDB_API_KEY environment variable
 
 # Dataset and Data loading
-num_workers: 12
-persistent_workers: True
-dataset: AIDERV2
-data_path: ./data/AIDERV2
-num_classes: 4
-img_height: 224
-img_width: 224
+num_workers: 0
+persistent_workers: False
+dataset: AIDER
+data_path: ./data/AIDER
+num_classes: 5
+img_height: 240
+img_width: 240
 augment: AIDER
 k_folds: 0
 split: proportional
@@ -32,9 +32,8 @@ lightning_precision: 32-true
 # Model settings
 network: GDNet
 input_channels: 3
-dense: True
 stem_reduction: 4
-ckpts_path: runs/GDNet_AIDERV2/version_40/checkpoints/best_model_val_loss.ckpt
+ckpts_path: ./runs/AIDER/GDNet_AIDERV/version_0/checkpoints/last.ckpt
 
 # Optimization parameters
 optimizer: rmsprop

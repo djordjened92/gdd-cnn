@@ -24,17 +24,12 @@ class DownSampler(nn.Module):
         self.stride = stride
         self.dilations_len = dilations_len
 
-        self.dense = dense
         self.dense_channels = in_channels + hidden_channels
-        self.downsampler_channels = out_channels if self.dense else hidden_channels
+        self.downsampler_channels = out_channels
 
-        self.dense_fc = None
-        self.batch_norm = None
-        self.activation = None
-        if self.dense:
-            self.dense_fc = nn.Conv2d(self.dense_channels, out_channels, kernel_size=1, stride=1, groups=self.dense_channels // (2 * self.dilations_len))
-            self.activation = nn.ReLU6()
-            self.batch_norm = nn.BatchNorm2d(self.out_channels)
+        self.dense_fc = nn.Conv2d(self.dense_channels, out_channels, kernel_size=1, stride=1, groups=self.dense_channels // (2 * self.dilations_len))
+        self.activation = nn.ReLU6()
+        self.batch_norm = nn.BatchNorm2d(self.out_channels)
 
         self.downsampler = None
         if pooling is None or pooling == nn.Identity:
@@ -58,21 +53,21 @@ class DownSampler(nn.Module):
             raise NotImplementedError(f"Pooling layer {self.pooling} not implemented")
         return output_resolution
 
-    def forward(self, x: torch.Tensor, dense_x: torch.Tensor=None) -> torch.Tensor:
-        if self.dense:
-            # Recombine channel dimension to have
-            # fmaps from different dilations grouped
-            B, C, H, W = x.shape
-            group_size = C // self.dilations_len
-            x = x.view(B, self.dilations_len, group_size, H, W)
-            x.swapaxes_(1, 2)
-            x = x.reshape(B, C, H, W)
+    def forward(self, x: torch.Tensor, dense_x: torch.Tensor) -> torch.Tensor:
+        # Aggregator:
+        # Recombine channel dimension to have
+        # fmaps from different dilations grouped
+        B, C, H, W = x.shape
+        group_size = C // self.dilations_len
+        x = x.view(B, self.dilations_len, group_size, H, W)
+        x.swapaxes_(1, 2)
+        x = x.reshape(B, C, H, W)
 
-            if dense_x is not None:
-                b, c, h, w = x.size()
-                x = torch.cat([x.view(b, -1, 1, h, w), dense_x.view(b, -1, 1, h, w)], dim=2)
-                x = x.reshape(b, -1, h, w)
-                x = self.activation(self.batch_norm(self.dense_fc(x)))
+        # Mix Concatenation
+        b, c, h, w = x.size()
+        x = torch.cat([x.view(b, -1, 1, h, w), dense_x.view(b, -1, 1, h, w)], dim=2)
+        x = x.reshape(b, -1, h, w)
+        x = self.activation(self.batch_norm(self.dense_fc(x)))
 
         x = self.grn(self.downsampler(x))
         return x
