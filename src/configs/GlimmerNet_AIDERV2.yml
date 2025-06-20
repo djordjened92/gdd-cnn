@@ -30,10 +30,10 @@ no_validation: True
 lightning_precision: 32-true
 
 # Model settings
-network: GDNet
+network: GlimmerNet
 input_channels: 3
 stem_reduction: 4
-ckpts_path: runs/GDNet_AIDERV2/version_40/checkpoints/best_model_val_loss.ckpt
+ckpts_path: runs/AIDERV2/GlimmerNet_AIDERV2/version_0/checkpoints/best_model_val_loss.ckpt
 
 # Optimization parameters
 optimizer: rmsprop

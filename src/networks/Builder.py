@@ -96,7 +96,7 @@ class GroupedDilationStage(nn.Module):
         out = self.downsampler(out, dense_x=x)
         return out
 
-def create_gdnet(net_kwargs: dict, criterion: nn.Module, optim_kwargs:dict, ckpt_path: str = None):
+def create_glimmernet(net_kwargs: dict, criterion: nn.Module, optim_kwargs:dict, ckpt_path: str = None):
     net_kwargs['modules'] = [GroupedDilationBlock, GroupedDilationBlock, GroupedDilationBlock, GroupedDilationBlock]
     net_kwargs['depths'] = [4, 4, 4, 2]
     net_kwargs['widths'] = [40, 80, 160, 240]

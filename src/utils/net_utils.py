@@ -1,7 +1,7 @@
 import argparse
 from torch import nn
 
-from networks.Builder import create_gdnet
+from networks.Builder import create_glimmernet
 
 def extract_net_params(args: argparse.Namespace):
     return {
@@ -38,7 +38,7 @@ def extract_optim_params(args: argparse.Namespace):
     }
 
 def select_arch(net_kwargs: dict, criterion: nn.Module, optim_kwargs: dict, ckpt_path: str = None):
-    if net_kwargs['network'].lower() == 'gdnet':
-        return create_gdnet(net_kwargs, criterion, optim_kwargs, ckpt_path)
+    if net_kwargs['network'].lower() == 'glimmernet':
+        return create_glimmernet(net_kwargs, criterion, optim_kwargs, ckpt_path)
     else:
         raise ValueError(f"Unsupported network: {net_kwargs['network']}")
