@@ -83,37 +83,44 @@ def inference(args: argparse.Namespace) -> None:
         def hook(module, input, output):
             activation_outs[name].append(output.detach())
         return hook
-    
-    print(model.backbone[1].stage[3].activation)
+
     model.backbone[1].stage[3].activation.register_forward_hook(get_activation_hook('stage1_GDB3'))
+    model.backbone[2].stage[3].activation.register_forward_hook(get_activation_hook('stage2_GDB3'))
+    model.backbone[3].stage[3].activation.register_forward_hook(get_activation_hook('stage3_GDB3'))
+    model.backbone[4].stage[0].activation.register_forward_hook(get_activation_hook('stage4_GDB3'))
 
     # Load image
+    indices = [242]
     with torch.no_grad():
         ds_iter = iter(testset)
-        image, label = next(ds_iter)
-        image = image_preprocess(image).to('cuda')
-        pred = torch.argmax(model(image.unsqueeze(0))).item()
 
-    print(activation_outs['stage1_GDB3'][0].shape)
+        for i in indices:
+            for _ in range(i):
+                image, label = next(ds_iter)
+            print(f'Index: {i}, label: {label}')
+            image = image_preprocess(image).to('cuda')
+            _ = model(image.unsqueeze(0))
 
     # Plot feature maps
-    fmaps = activation_outs['stage1_GDB3'][0][0].cpu()
+    fig, axes = plt.subplots(4, 4, figsize=(12, 12))  # Width x Height in inches
 
-    x_min = fmaps.amin(dim=(1, 2), keepdim=True)  # shape: (N, 1, 1)
-    x_max = fmaps.amax(dim=(1, 2), keepdim=True)  # shape: (N, 1, 1)
+    for i in range(len(indices)):
+        for j, v in enumerate(activation_outs.values()):
+            fmaps = v[i][0].cpu()
 
-    # Normalize to [0, 1] per slice
-    fmaps_norm = (fmaps - x_min) / (x_max - x_min + 1e-8)
+            x_min = fmaps.amin(dim=(1, 2), keepdim=True)  # shape: (N, 1, 1)
+            x_max = fmaps.amax(dim=(1, 2), keepdim=True)  # shape: (N, 1, 1)
 
-    fmaps_split = torch.split(fmaps_norm, 10, 0)
-    fig, axes = plt.subplots(1, 4, figsize=(12, 3))  # Width x Height in inches
+            # Normalize to [0, 1] per slice
+            fmaps_norm = (fmaps - x_min) / (x_max - x_min + 1e-8)
+            fmaps_split = torch.split(fmaps_norm, fmaps_norm.shape[0]//4, 0)
 
-    for ax, tensor in zip(axes, fmaps_split):
-        ax.imshow(tensor.mean(dim=0), cmap='viridis')
-        ax.axis('off')  # Hide axes
+            for k, tensor in enumerate(fmaps_split):
+                axes[j][k].imshow(tensor.mean(dim=0), cmap='viridis')
+                axes[j][k].axis('off')  # Hide axes
 
-    plt.tight_layout()
-    plt.savefig('stage1_GDB3.png', dpi=300, bbox_inches='tight', pad_inches=0)
+        plt.tight_layout()
+        plt.savefig(f'{indices[i]}_stages.png', dpi=300, bbox_inches='tight', pad_inches=0)
 
 if __name__=='__main__':
     args = parse_command()

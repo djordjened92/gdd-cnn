@@ -36,7 +36,6 @@ class GlimmerNet(LightningNet):
         curr_resolution = self.stages[0].get_output_resolution()
         prev_channel_dim = self.widths[0]
         for i in range(len(self.depths)):
-            depth = self.depths[i] if i < len(self.depths) - 1 else self.depths[i] - 1
             hidden_channels = self.widths[i]
             out_channels = self.widths[i + 1] if i < len(self.depths) - 1 else self.widths[i]
             
@@ -46,7 +45,7 @@ class GlimmerNet(LightningNet):
                                                     prev_channel_dim,
                                                     hidden_channels,
                                                     out_channels,
-                                                    depth,
+                                                    self.depths[i],
                                                     self.dilations[i],
                                                     self.poolings[i]))
             curr_resolution = self.stages[i + 1].downsampler.get_output_resolution()
@@ -98,7 +97,7 @@ class GroupedDilationStage(nn.Module):
 
 def create_glimmernet(net_kwargs: dict, criterion: nn.Module, optim_kwargs:dict, ckpt_path: str = None):
     net_kwargs['modules'] = [GroupedDilationBlock, GroupedDilationBlock, GroupedDilationBlock, GroupedDilationBlock]
-    net_kwargs['depths'] = [4, 4, 4, 2]
+    net_kwargs['depths'] = [4, 4, 4, 1]
     net_kwargs['widths'] = [40, 80, 160, 240]
     net_kwargs['dilations'] = [[1, 2, 2, 3], [1, 2, 2, 3], [1, 2, 2, 3], [1, 2, 2, 3]]
     net_kwargs['poolings'] = [nn.MaxPool2d, nn.MaxPool2d, nn.MaxPool2d, nn.AvgPool2d]
