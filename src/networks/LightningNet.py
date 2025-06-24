@@ -274,7 +274,6 @@ class LightningNet(L.LightningModule):
             self.logger.experiment.add_scalar(f'{mode}/learning_rate', learning_rate, self.current_epoch)
 
         self.logger.experiment.add_scalar(f'{mode}/loss', loss, self.current_epoch)
-        self.logger.experiment.add_scalar(f'{mode}/f1', f1.item(), self.current_epoch)
         self.logger.experiment.add_scalar(f'{mode}/acc1', acc1.item(), self.current_epoch)
         self.logger.experiment.add_scalar(f'{mode}/acc{self.getAccuracyTopX.top_k}', accX.item(), self.current_epoch)
         
