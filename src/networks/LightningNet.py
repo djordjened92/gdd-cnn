@@ -227,6 +227,7 @@ class LightningNet(L.LightningModule):
 
     def on_validation_epoch_end(self):
         acc1, acc2, f1 = self.base_logger(self.validation_step_outputs, mode='val')
+        self.log('val/f1', f1.item(), prog_bar=True)
         
         self.best_accuracy = max(self.best_accuracy, acc1.item())
         self.best_f1 = max(self.best_f1, f1)
@@ -273,6 +274,7 @@ class LightningNet(L.LightningModule):
             self.logger.experiment.add_scalar(f'{mode}/learning_rate', learning_rate, self.current_epoch)
 
         self.logger.experiment.add_scalar(f'{mode}/loss', loss, self.current_epoch)
+        self.logger.experiment.add_scalar(f'{mode}/f1', f1.item(), self.current_epoch)
         self.logger.experiment.add_scalar(f'{mode}/acc1', acc1.item(), self.current_epoch)
         self.logger.experiment.add_scalar(f'{mode}/acc{self.getAccuracyTopX.top_k}', accX.item(), self.current_epoch)
         

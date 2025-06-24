@@ -121,6 +121,14 @@ def train(args: argparse.Namespace) -> None:
         mode="min"
     )
 
+    best_val_checkpoint = ModelCheckpoint(
+        filename="best_model_val_f1",
+        save_top_k=1,
+        verbose=False,
+        monitor="val/f1",
+        mode="max"
+    )
+
     best_train_checkpoint = ModelCheckpoint(
         filename="best_model_train_loss",
         save_top_k=1,
