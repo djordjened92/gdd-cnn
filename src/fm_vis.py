@@ -84,29 +84,33 @@ def inference(args: argparse.Namespace) -> None:
             activation_outs[name].append(output.detach())
         return hook
 
-    model.backbone[1].stage[3].activation.register_forward_hook(get_activation_hook('stage1_GDB3'))
-    model.backbone[2].stage[3].activation.register_forward_hook(get_activation_hook('stage2_GDB3'))
+    # model.backbone[1].stage[3].activation.register_forward_hook(get_activation_hook('stage1_GDB3'))
+    # model.backbone[2].stage[3].activation.register_forward_hook(get_activation_hook('stage2_GDB3'))
     model.backbone[3].stage[3].activation.register_forward_hook(get_activation_hook('stage3_GDB3'))
-    model.backbone[4].stage[0].activation.register_forward_hook(get_activation_hook('stage4_GDB3'))
+    # model.backbone[4].stage[0].activation.register_forward_hook(get_activation_hook('stage4_GDB3'))
 
     # Load image
-    indices = [242]
+    indices = [26, 260, 1014, 1182]
+    i = -1
+    j = 0
+    ds_iter = iter(testset)
     with torch.no_grad():
-        ds_iter = iter(testset)
-
-        for i in indices:
-            for _ in range(i):
+        for ind in indices:
+            while True:
+                i += 1
                 image, label = next(ds_iter)
-            print(f'Index: {i}, label: {label}')
-            image = image_preprocess(image).to('cuda')
-            _ = model(image.unsqueeze(0))
+                if i == ind:
+                    print(f'Index: {j}, label: {label}')
+                    image = image_preprocess(image).to('cuda')
+                    _ = model(image.unsqueeze(0))
+                    break
 
     # Plot feature maps
     fig, axes = plt.subplots(4, 4, figsize=(12, 12))  # Width x Height in inches
-
     for i in range(len(indices)):
-        for j, v in enumerate(activation_outs.values()):
-            fmaps = v[i][0].cpu()
+        for k, v in activation_outs.items():
+            fmaps = v[i].cpu()[0]
+            print(fmaps.shape)
 
             x_min = fmaps.amin(dim=(1, 2), keepdim=True)  # shape: (N, 1, 1)
             x_max = fmaps.amax(dim=(1, 2), keepdim=True)  # shape: (N, 1, 1)
@@ -116,11 +120,11 @@ def inference(args: argparse.Namespace) -> None:
             fmaps_split = torch.split(fmaps_norm, fmaps_norm.shape[0]//4, 0)
 
             for k, tensor in enumerate(fmaps_split):
-                axes[j][k].imshow(tensor.mean(dim=0), cmap='viridis')
-                axes[j][k].axis('off')  # Hide axes
+                axes[i][k].imshow(tensor.mean(dim=0), cmap='viridis')
+                axes[i][k].axis('off')  # Hide axes
 
-        plt.tight_layout()
-        plt.savefig(f'{indices[i]}_stages.png', dpi=300, bbox_inches='tight', pad_inches=0)
+    plt.tight_layout()
+    plt.savefig(f'fmaps_dir/fmaps_stage_3.png', dpi=300, bbox_inches='tight', pad_inches=0)
 
 if __name__=='__main__':
     args = parse_command()
