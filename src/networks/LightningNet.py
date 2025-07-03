@@ -229,8 +229,8 @@ class LightningNet(L.LightningModule):
         acc1, acc2, f1 = self.base_logger(self.validation_step_outputs, mode='val')
         self.log('val/f1', f1.item(), prog_bar=True)
         
-        self.best_accuracy = max(self.best_accuracy, acc1.item())
-        self.best_f1 = max(self.best_f1, f1)
+        self.best_accuracy = max(self.best_accuracy, acc1.item()) if self.current_epoch > 0 else 0. # prevent the bug of initial acc1=1
+        self.best_f1 = max(self.best_f1, f1) if self.current_epoch > 0 else 0. # prevent the bug of initial f1=1
         self.logger.experiment.add_scalar('val/best_acc1', self.best_accuracy, self.current_epoch)
         self.logger.experiment.add_scalar('val/best_f1', self.best_f1, self.current_epoch)
         logging.info(f"Best accuracy so far: {self.best_accuracy}")
