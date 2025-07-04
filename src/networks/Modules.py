@@ -32,7 +32,6 @@ class GroupedDilationBlock(nn.Module):
     def __init__(self,
                  in_channels,
                  out_channels,
-                 resolution,
                  kernel_size,
                  stride,
                  dilations):

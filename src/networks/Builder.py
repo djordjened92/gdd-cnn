@@ -6,7 +6,7 @@ import logging
 
 from networks.Modules import Stem, GroupedDilationBlock
 from networks.LightningNet import LightningNet
-from networks.Downsampler import DownSampler
+from networks.AggDownSample import AggDownSample
 
 class GlimmerNet(LightningNet):
     r""" GlimmerNet
@@ -48,7 +48,7 @@ class GlimmerNet(LightningNet):
                                                     self.depths[i],
                                                     self.dilations[i],
                                                     self.poolings[i]))
-            curr_resolution = self.stages[i + 1].downsampler.get_output_resolution()
+            curr_resolution = self.stages[i + 1].aggregate_downsample.get_output_resolution()
 
         self.backbone = nn.Sequential(*self.stages)
 
@@ -82,17 +82,16 @@ class GroupedDilationStage(nn.Module):
             cur_in_channels = in_channels if i == 0 else hidden_channels
             self.layers.append(module(cur_in_channels,
                                       hidden_channels,
-                                      resolution,
                                       kernel_size=3,
                                       stride=1,
                                       dilations=dilations))
 
         self.stage = nn.Sequential(*self.layers)
-        self.downsampler = DownSampler(resolution, in_channels, hidden_channels, out_channels, len(dilations), kernel_size=2, stride=2, pooling=pooling)
+        self.aggregate_downsample = AggDownSample(resolution, in_channels, hidden_channels, out_channels, len(dilations), kernel_size=2, stride=2, pooling=pooling)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         out = self.stage(x)
-        out = self.downsampler(out, dense_x=x)
+        out = self.aggregate_downsample(out, dense_x=x)
         return out
 
 def create_glimmernet(net_kwargs: dict, criterion: nn.Module, optim_kwargs:dict, ckpt_path: str = None):

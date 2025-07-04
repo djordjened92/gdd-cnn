@@ -4,7 +4,7 @@ import logging
 
 from networks.LayerNorms import GRN
 
-class DownSampler(nn.Module):
+class AggDownSample(nn.Module):
     def __init__(self, resolution: int,
                  in_channels: int,
                  hidden_channels: int,
@@ -13,7 +13,7 @@ class DownSampler(nn.Module):
                  kernel_size: int,
                  stride: int,
                  pooling:nn.Module=None) -> None:
-        super(DownSampler, self).__init__()
+        super(AggDownSample, self).__init__()
         self.in_channels = in_channels
         self.hidden_channels = hidden_channels
         self.out_channels = out_channels
@@ -49,8 +49,7 @@ class DownSampler(nn.Module):
             raise NotImplementedError(f"Pooling layer {self.pooling} not implemented")
         return output_resolution
 
-    def forward(self, x: torch.Tensor, dense_x: torch.Tensor) -> torch.Tensor:
-        # Aggregator:
+    def aggregate(self, x: torch.Tensor, dense_x: torch.Tensor) -> torch.Tensor:
         # Recombine channel dimension to have
         # fmaps from different dilations grouped
         B, C, H, W = x.shape
@@ -65,5 +64,9 @@ class DownSampler(nn.Module):
         x = x.reshape(b, -1, h, w)
         x = self.activation(self.batch_norm(self.dense_fc(x)))
 
+        return x
+
+    def forward(self, x: torch.Tensor, dense_x: torch.Tensor) -> torch.Tensor:
+        x = self.aggregate(x, dense_x)
         x = self.grn(self.downsampler(x))
         return x
