@@ -12,8 +12,6 @@ from utils.utils import parse_command, set_random_seed, create_log_folder
 from utils.distributed import is_main_process
 import multiprocessing
 
-from embedded.onnx_export import onnx_export
-
 def setup(args: argparse.Namespace):
     if is_main_process():
         os.makedirs(args.main_runs_folder, exist_ok=True)
@@ -75,9 +73,6 @@ def main() -> None:
 
     if args.mode.lower() == 'test':
         test(trainer, model, args)
-
-    if args.mode.lower() == 'export':
-        onnx_export(args)
 
 if __name__ == '__main__':
     main()
