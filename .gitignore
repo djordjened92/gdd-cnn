@@ -176,3 +176,4 @@ runs
 *.png
 *.jpg
 *.zip
+!assets/*
