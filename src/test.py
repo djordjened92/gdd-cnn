@@ -84,7 +84,7 @@ def test(trainer, model, args: argparse.Namespace) -> None:
         api_key = os.environ["WANDB_API_KEY"]
         wandb.login(key=api_key)
 
-        wandb_logger = WandbLogger(name=args.experiment_name, save_dir=os.path.dirname(args.run_path), project="TakuNet")
+        wandb_logger = WandbLogger(name=args.experiment_name, save_dir=os.path.dirname(args.run_path), project="GlimmerNet")
         loggers.append(wandb_logger)
 
     if is_main_process():

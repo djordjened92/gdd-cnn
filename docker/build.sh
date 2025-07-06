@@ -24,7 +24,7 @@ else
 fi
 
 
-IMAGE_NAME="takunet-docker"         # IMAGE NAME: if you change this, you have to change the name also in run.sh
+IMAGE_NAME="glimmernet-docker"         # IMAGE NAME: if you change this, you have to change the name also in run.sh
 IMAGE_TAG="latest"                  # IMAGE TAG: if you change this, you have to change the tag also in run.sh
 echo "Started build for $IMAGE_NAME:$IMAGE_TAG"
 

@@ -43,7 +43,7 @@ def parse_command():
     parser.add_argument('--no-validation', action='store_true', default=False, help='whether to use validation set')
 
     # Network
-    parser.add_argument('--network', type=str, default='takunet', help='network used for training')
+    parser.add_argument('--network', type=str, default='glimmernet', help='network used for training')
     parser.add_argument('--input-channels', type=int, default=3, help='number of input channels')
     parser.add_argument('--ckpts-path', type=str, help='path to the model checkpoint')
     parser.add_argument('--dense', action='store_true', default=True, help='whether to use dense connections')

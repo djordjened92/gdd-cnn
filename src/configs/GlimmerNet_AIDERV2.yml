@@ -1,4 +1,4 @@
-# TakuNet configuration file
+# GlimmerNet configuration file
 
 # Base Settings
 num_epochs: 300
@@ -33,7 +33,7 @@ lightning_precision: 32-true
 network: GlimmerNet
 input_channels: 3
 stem_reduction: 4
-ckpts_path: runs/AIDERV2/GlimmerNet_AIDERV2/version_8/checkpoints/best_model_val_f1.ckpt
+ckpts_path: runs/AIDERV2/GlimmerNet_AIDERV2/version_1/checkpoints/best_model_val_f1.ckpt
 
 # Optimization parameters
 optimizer: rmsprop

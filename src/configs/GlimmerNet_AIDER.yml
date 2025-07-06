@@ -1,4 +1,4 @@
-# TakuNet configuration file
+# GlimmerNet configuration file
 
 # Base Settings
 num_epochs: 300
