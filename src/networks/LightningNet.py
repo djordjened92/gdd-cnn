@@ -67,7 +67,8 @@ class LightningNet(L.LightningModule):
             resume='')
         else:
             self.model_ema = None
-    
+        self.save_hyperparameters()
+
     def override_device(self, device):
         self.getAccuracy.to(device)
         self.getAccuracyTopX.to(device)

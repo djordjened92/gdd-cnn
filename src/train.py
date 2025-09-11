@@ -53,6 +53,7 @@ def train(args: argparse.Namespace) -> None:
                                   shuffle=True,
                                   subset='train',
                                   transforms=transforms,
+                                  norm_mean_std=((0.5071, 0.4865, 0.4409), (0.2673, 0.2564, 0.2762)) if args.dataset.upper() == "CIFAR100" else (),
                                   num_workers=args.num_workers,
                                   persistent_workers=args.persistent_workers,
                                   pin_memory=args.pin_memory,
@@ -63,6 +64,7 @@ def train(args: argparse.Namespace) -> None:
                                 shuffle=False,
                                 subset='val',
                                 transforms=transforms,
+                                norm_mean_std=((0.5071, 0.4865, 0.4409), (0.2673, 0.2564, 0.2762)) if args.dataset.upper() == "CIFAR100" else (),
                                 num_workers=args.num_workers,
                                 persistent_workers=args.persistent_workers,
                                 pin_memory=args.pin_memory,
@@ -150,6 +152,7 @@ def train(args: argparse.Namespace) -> None:
                         precision=args.lightning_precision,
                         deterministic=True,
                         logger=loggers,
+                        check_val_every_n_epoch=4,
                         callbacks=[best_val_checkpoint, best_train_checkpoint, last_model_checkpoint],
                         )
     

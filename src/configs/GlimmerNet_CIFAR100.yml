@@ -1,0 +1,58 @@
+# GlimmerNet configuration file
+
+# Base Settings
+num_epochs: 400
+batch_size: 128
+seed: 22
+experiment_name: GlimmerNet_CIFAR100
+main_runs_folder: /home/user/src/runs/CIFAR100
+pin_memory: False
+mode: train
+
+# Logging
+tensorboard: True
+wandb: False # if True, you need to set the WANDB_API_KEY environment variable
+
+# Dataset and Data loading
+num_workers: 4
+persistent_workers: True
+dataset: CIFAR100
+data_path: ./data/CIFAR100
+num_classes: 100
+img_height: 32
+img_width: 32
+augment: CIFAR
+k_folds: 0
+split: proportional
+no_validation: True
+
+# Pytorch Lightning Precision
+lightning_precision: 32-true
+
+# Model settings
+network: GlimmerNet
+input_channels: 3
+stem_reduction: 1
+ckpts_path: runs/CIFAR100/GlimmerNet_CIFAR100/version_1/checkpoints/best_model_val_f1.ckpt
+
+# Optimization parameters
+optimizer: rmsprop
+scheduler: step # before changing the scheduler, check how it works on the PyTorch documentation
+scheduler_per_epoch: True
+learning_rate: 0.001
+learning_rate_decay: 0.975
+learning_rate_decay_steps: 2
+min_learning_rate: null
+warmup_epochs: 0
+warmup_steps: -1
+weight_decay: 0.00001
+weight_decay_end: 0.00001
+update_freq: 1
+label_smoothing: 0.0
+model_ema: False
+alpha: 0.9
+momentum: 0.9
+class_weights: null
+
+# Export
+onnx_opset_version: 17

@@ -51,7 +51,7 @@ def sanity_check(args: argparse.Namespace) -> None:
 
     assert args.mode in ['train', 'test', 'export'], "Mode must be one of ['train', 'test', 'export']"
     assert isinstance(args.aug_type, str), "Augmentation type must be a string"
-    assert args.aug_type.upper() in ['AIDER'], "Augmentation type must be one of ['AIDER']"
+    assert args.aug_type.upper() in ['AIDER', 'CIFAR'], "Augmentation type must be one of ['AIDER']"
 
 
 def main() -> None:
