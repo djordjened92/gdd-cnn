@@ -12,6 +12,7 @@ from torchvision.transforms import ToTensor
 from datasets.aider import AIDER
 from datasets.aiderv2 import AIDERV2
 from datasets.cifar100 import CIFAR100
+from datasets.tiny_imgnet import TinyImageNet
 
 class CollateFnWrapper:
     def __init__(self,
@@ -36,6 +37,7 @@ class CollateFnWrapper:
             if isinstance(self.transforms, AlbuCompose):
                 images = np.stack([self.transforms(image=img.permute(1, 2, 0).detach().cpu().numpy())["image"] for img in images])
                 images = torch.from_numpy(np.transpose(images, (0, 3, 1, 2))).to(torch.float32).to(self.device)
+                images = images / 255.
             elif isinstance(self.transforms, TorchCompose):
                 images = [self.transforms(img) for img in images]
                 images = [self.resize(self.to_tensor(img)) for img in images]
@@ -44,8 +46,6 @@ class CollateFnWrapper:
             images = [self.resize(self.to_tensor(img)) for img in images]
             images = torch.stack(images).to(self.device).to(torch.float32)
         labels = torch.tensor(list(labels), device=self.device)
-
-        images = images / 255.
 
         if self.norm_mean_std:
             images = self.normalize(images)
@@ -94,6 +94,8 @@ def get_dataset(dataset: str,
         return AIDERV2(data_path, target_size, subset)
     elif dataset.upper() == "CIFAR100":
         return CIFAR100(data_path, subset)
+    elif dataset.upper() == "TinyImageNet":
+        return TinyImageNet(data_path, subset)
     elif dataset.upper() == "FAKEDATA": # just for testing purposes
         return FakeData(size=100, image_size=(3, *target_size), num_classes=num_classes, transform=torchvision.transforms.ToTensor())
     else:
