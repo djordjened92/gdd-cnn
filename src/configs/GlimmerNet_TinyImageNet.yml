@@ -2,7 +2,7 @@
 
 # Base Settings
 num_epochs: 1000
-batch_size: 64
+batch_size: 128
 seed: 22
 experiment_name: GlimmerNet_TinyImageNet
 main_runs_folder: /home/user/src/runs/TinyImageNet
@@ -21,6 +21,7 @@ data_path: ./data/tiny-imagenet-200
 num_classes: 200
 img_height: 64
 img_width: 64
+acc_avg_type: micro
 augment: TinyImageNet
 k_folds: 0
 split: proportional

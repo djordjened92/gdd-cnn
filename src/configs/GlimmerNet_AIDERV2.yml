@@ -21,6 +21,7 @@ data_path: ./data/AIDERV2
 num_classes: 4
 img_height: 224
 img_width: 224
+acc_avg_type: weighted
 augment: AIDER
 k_folds: 0
 split: proportional

@@ -27,6 +27,7 @@ class LightningNet(L.LightningModule):
         self.num_epochs = optim_kwargs['num_epochs']
         self.dataset_length = optim_kwargs['dataset_length']
         self.classes = net_kwargs['classes']
+        self.acc_avg = net_kwargs['acc_avg_type']
         self.output_classes = net_kwargs['output_classes']
         assert len(self.classes) == self.output_classes, "Number of classes does not match the output classes"
 
@@ -55,9 +56,9 @@ class LightningNet(L.LightningModule):
         self.best_f1 = 0.0
         self.fps_list = []
 
-        self.getAccuracy = Accuracy(task='multiclass', num_classes=self.output_classes, average='weighted')
-        self.getAccuracyTopX = Accuracy(task='multiclass', num_classes=self.output_classes, average='weighted', top_k=2)
-        self.getF1Score = F1Score(task='multiclass', num_classes=self.output_classes, average='weighted')
+        self.getAccuracy = Accuracy(task='multiclass', num_classes=self.output_classes, average=self.acc_avg)
+        self.getAccuracyTopX = Accuracy(task='multiclass', num_classes=self.output_classes, average=self.acc_avg, top_k=2)
+        self.getF1Score = F1Score(task='multiclass', num_classes=self.output_classes, average=self.acc_avg)
         self.getConfusionMatrix = MulticlassConfusionMatrix(num_classes=self.output_classes, normalize='pred')
 
         if optim_kwargs['model_ema']:
