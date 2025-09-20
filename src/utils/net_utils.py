@@ -35,6 +35,7 @@ def extract_optim_params(args: argparse.Namespace):
         'alpha': args.alpha,
         'momentum': args.momentum,
         'model_ema': args.model_ema,
+        'acc_avg_type': args.acc_avg_type
     }
 
 def select_arch(net_kwargs: dict, criterion: nn.Module, optim_kwargs: dict, ckpt_path: str = None):

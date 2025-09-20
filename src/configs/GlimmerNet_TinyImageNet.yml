@@ -21,7 +21,6 @@ data_path: ./data/tiny-imagenet-200
 num_classes: 200
 img_height: 64
 img_width: 64
-acc_avg_type: micro
 augment: TinyImageNet
 k_folds: 0
 split: proportional
@@ -54,6 +53,7 @@ model_ema: False
 alpha: 0.9
 momentum: 0.9
 class_weights: null
+acc_avg_type: micro
 
 # Export
 onnx_opset_version: 17

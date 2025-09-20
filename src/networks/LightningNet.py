@@ -27,7 +27,6 @@ class LightningNet(L.LightningModule):
         self.num_epochs = optim_kwargs['num_epochs']
         self.dataset_length = optim_kwargs['dataset_length']
         self.classes = net_kwargs['classes']
-        self.acc_avg = net_kwargs['acc_avg_type']
         self.output_classes = net_kwargs['output_classes']
         assert len(self.classes) == self.output_classes, "Number of classes does not match the output classes"
 
@@ -46,6 +45,7 @@ class LightningNet(L.LightningModule):
         self.update_freq = optim_kwargs['update_freq']
         self.alpha = optim_kwargs['alpha']
         self.momentum = optim_kwargs['momentum']
+        self.acc_avg = optim_kwargs['acc_avg_type']
 
         self.max_batch_idx = self.dataset_length // self.batch_size
 
