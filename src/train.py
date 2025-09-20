@@ -24,6 +24,12 @@ def train(args: argparse.Namespace) -> None:
     transforms = select_augmentation(args.augment, (args.img_height, args.img_width), p=0.1)
     target_size=(args.img_height, args.img_width)
 
+    norm_mean_std = ()
+    if args.dataset.upper() == "CIFAR100":
+        norm_mean_std=((0.5071, 0.4865, 0.4409), (0.2673, 0.2564, 0.2762))
+    elif args.dataset.upper() == "TinyImageNet":
+        norm_mean_std = ((0.4802, 0.4481, 0.3975), (0.2302, 0.2265, 0.2262))
+
     trainset = get_dataset(dataset=args.dataset, 
                            data_path=args.data_path, 
                            target_size=target_size, 
@@ -53,7 +59,7 @@ def train(args: argparse.Namespace) -> None:
                                   shuffle=True,
                                   subset='train',
                                   transforms=transforms,
-                                  norm_mean_std=((0.5071, 0.4865, 0.4409), (0.2673, 0.2564, 0.2762)) if args.dataset.upper() == "CIFAR100" else (),
+                                  norm_mean_std=norm_mean_std,
                                   num_workers=args.num_workers,
                                   persistent_workers=args.persistent_workers,
                                   pin_memory=args.pin_memory,
@@ -64,7 +70,7 @@ def train(args: argparse.Namespace) -> None:
                                 shuffle=False,
                                 subset='val',
                                 transforms=transforms,
-                                norm_mean_std=((0.5071, 0.4865, 0.4409), (0.2673, 0.2564, 0.2762)) if args.dataset.upper() == "CIFAR100" else (),
+                                norm_mean_std=norm_mean_std,
                                 num_workers=args.num_workers,
                                 persistent_workers=args.persistent_workers,
                                 pin_memory=args.pin_memory,

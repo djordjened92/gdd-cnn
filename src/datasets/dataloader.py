@@ -27,7 +27,8 @@ class CollateFnWrapper:
         self.subset = subset
 
         self.resize = torchvision.transforms.Resize(target_size)
-        self.normalize = torchvision.transforms.Normalize(self.norm_mean_std[0], self.norm_mean_std[1])
+        if self.norm_mean_std:
+            self.normalize = torchvision.transforms.Normalize(self.norm_mean_std[0], self.norm_mean_std[1])
         self.to_tensor = ToTensor()
 
     def __call__(self, batch):
