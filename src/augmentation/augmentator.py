@@ -9,7 +9,13 @@ def select_augmentation(aug_type: str, target_size: tuple, p: float):
     elif aug_type.upper() == 'CIFAR':
         cifar_aug = transforms.Compose([
                     transforms.RandomCrop(32, padding=4),
-                    transforms.RandomHorizontalFlip()
+                    transforms.RandomHorizontalFlip(),
+                    # transforms.ColorJitter(
+                    #     brightness=0.2,  # Jitter brightness by +/- 20%
+                    #     contrast=(0.5, 1.5), # Contrast factor chosen uniformly from [0.5, 1.5]
+                    #     saturation=0.3,  # Jitter saturation by +/- 30%
+                    #     hue=0.1          # Jitter hue by +/- 0.1
+                    # )
                 ])
         return cifar_aug
     else:
