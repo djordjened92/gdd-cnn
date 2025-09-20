@@ -4,8 +4,8 @@
 num_epochs: 1000
 batch_size: 64
 seed: 22
-experiment_name: GlimmerNet_CIFAR100
-main_runs_folder: /home/user/src/runs/CIFAR100
+experiment_name: GlimmerNet_TinyImageNet
+main_runs_folder: /home/user/src/runs/TinyImageNet
 pin_memory: False
 mode: train
 
@@ -16,12 +16,12 @@ wandb: False # if True, you need to set the WANDB_API_KEY environment variable
 # Dataset and Data loading
 num_workers: 4
 persistent_workers: True
-dataset: CIFAR100
-data_path: ./data/CIFAR100
-num_classes: 100
-img_height: 32
-img_width: 32
-augment: CIFAR
+dataset: TinyImageNet
+data_path: ./data/tiny-imagenet-200
+num_classes: 200
+img_height: 64
+img_width: 64
+augment: TinyImageNet
 k_folds: 0
 split: proportional
 no_validation: True
@@ -33,7 +33,7 @@ lightning_precision: 32-true
 network: GlimmerNet
 input_channels: 3
 stem_reduction: 1
-ckpts_path: runs/CIFAR100/GlimmerNet_CIFAR100/version_1/checkpoints/best_model_val_f1.ckpt
+ckpts_path: runs/TinyImageNet/GlimmerNet_TinyImageNet/version_1/checkpoints/best_model_val_f1.ckpt
 
 # Optimization parameters
 optimizer: rmsprop

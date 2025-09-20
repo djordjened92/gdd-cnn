@@ -36,7 +36,7 @@ class AggDownSample(nn.Module):
         elif pooling == nn.Conv2d:
             self.downsampler = nn.Conv2d(self.downsampler_channels, out_channels, kernel_size=2, stride=2, groups=out_channels, bias=False)
         elif pooling == nn.MaxPool2d or pooling == nn.AvgPool2d:
-            self.downsampler = pooling(kernel_size, stride)
+            self.downsampler = pooling(kernel_size, stride)#, padding=kernel_size//2)
         
         self.grn = GRN(self.out_channels)
 
