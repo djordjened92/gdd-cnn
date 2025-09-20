@@ -27,7 +27,7 @@ def train(args: argparse.Namespace) -> None:
     norm_mean_std = ()
     if args.dataset.upper() == "CIFAR100":
         norm_mean_std=((0.5071, 0.4865, 0.4409), (0.2673, 0.2564, 0.2762))
-    elif args.dataset.upper() == "TinyImageNet":
+    elif args.dataset.upper() == "TINYIMAGENET":
         norm_mean_std = ((0.4802, 0.4481, 0.3975), (0.2302, 0.2265, 0.2262))
 
     trainset = get_dataset(dataset=args.dataset, 

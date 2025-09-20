@@ -95,7 +95,7 @@ def get_dataset(dataset: str,
         return AIDERV2(data_path, target_size, subset)
     elif dataset.upper() == "CIFAR100":
         return CIFAR100(data_path, subset)
-    elif dataset.upper() == "TinyImageNet":
+    elif dataset.upper() == "TINYIMAGENET":
         return TinyImageNet(data_path, subset)
     elif dataset.upper() == "FAKEDATA": # just for testing purposes
         return FakeData(size=100, image_size=(3, *target_size), num_classes=num_classes, transform=torchvision.transforms.ToTensor())

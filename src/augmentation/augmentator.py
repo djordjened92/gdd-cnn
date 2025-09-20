@@ -12,7 +12,7 @@ def select_augmentation(aug_type: str, target_size: tuple, p: float):
                     transforms.RandomHorizontalFlip()
                 ])
         return cifar_aug
-    elif aug_type.upper() == 'TinyImageNet':
+    elif aug_type.upper() == 'TINYIMAGENET':
         cifar_aug = transforms.Compose([
                     transforms.RandomCrop(64, padding=8),
                     transforms.RandomHorizontalFlip()
