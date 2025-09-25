@@ -13,10 +13,11 @@ def select_augmentation(aug_type: str, target_size: tuple, p: float):
                 ])
         return cifar_aug
     elif aug_type.upper() == 'TINYIMAGENET':
-        cifar_aug = transforms.Compose([
-                    transforms.RandomCrop(64, padding=8),
-                    transforms.RandomHorizontalFlip()
+        tin_aug = transforms.Compose([
+                    transforms.RandomResizedCrop(64, scale=(0.8, 1.0)),     # zoom-in/zoom-out
+                    transforms.RandomHorizontalFlip(p=0.5),                 # standard flip
+                    transforms.RandAugment(num_ops=2, magnitude=9)
                 ])
-        return cifar_aug
+        return tin_aug
     else:
         raise ValueError(f"Augmentation type {aug_type} not supported")
