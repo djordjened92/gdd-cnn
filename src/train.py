@@ -121,12 +121,12 @@ def train(args: argparse.Namespace) -> None:
         print("FLOPs:", flops.total())
         logging.info(f"FLOPs: {flops.total()}")
 
-    best_val_checkpoint = ModelCheckpoint(
-        filename="best_model_val_loss",
+    best_val_acc1_checkpoint = ModelCheckpoint(
+        filename="best_model_val_acc1",
         save_top_k=1,
         verbose=False,
-        monitor="val/loss_ckpts",
-        mode="min"
+        monitor="val/acc1",
+        mode="max"
     )
 
     best_val_checkpoint = ModelCheckpoint(
@@ -135,14 +135,6 @@ def train(args: argparse.Namespace) -> None:
         verbose=False,
         monitor="val/f1",
         mode="max"
-    )
-
-    best_train_checkpoint = ModelCheckpoint(
-        filename="best_model_train_loss",
-        save_top_k=1,
-        verbose=False,
-        monitor="train/running_loss",
-        mode="min"
     )
 
     last_model_checkpoint = ModelCheckpoint(
@@ -159,7 +151,7 @@ def train(args: argparse.Namespace) -> None:
                         deterministic=True,
                         logger=loggers,
                         check_val_every_n_epoch=4,
-                        callbacks=[best_val_checkpoint, best_train_checkpoint, last_model_checkpoint],
+                        callbacks=[best_val_checkpoint, best_val_acc1_checkpoint, last_model_checkpoint],
                         )
     
     if is_main_process():
@@ -171,6 +163,7 @@ def train(args: argparse.Namespace) -> None:
     trainer.fit(model, 
                 train_dataloaders=train_loader, 
                 val_dataloaders=val_loader,
+                #ckpt_path='/home/user/src/runs/TinyImageNet/GlimmerNet_TinyImageNet/version_7/checkpoints/model-last.ckpt'
                 )
     
     if is_main_process():

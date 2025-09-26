@@ -219,6 +219,8 @@ class LightningNet(L.LightningModule):
             self.model_ema.update(self)
 
     def on_train_epoch_end(self):
+        if not self.training_step_outputs:
+            return
         self.base_logger(self.training_step_outputs, mode='train')        
         self.training_step_outputs.clear()
 
@@ -228,8 +230,11 @@ class LightningNet(L.LightningModule):
                 self.trainer.train_dataloader.dataset.set_kfold(self.current_fold)
 
     def on_validation_epoch_end(self):
+        if not self.validation_step_outputs:
+            return
         acc1, acc2, f1 = self.base_logger(self.validation_step_outputs, mode='val')
         self.log('val/f1', f1.item(), prog_bar=True)
+        self.log('val/acc1', acc1.item(), prog_bar=True)
         
         self.best_accuracy = max(self.best_accuracy, acc1.item()) if self.current_epoch > 0 else 0. # prevent the bug of initial acc1=1
         self.best_f1 = max(self.best_f1, f1) if self.current_epoch > 0 else 0. # prevent the bug of initial f1=1

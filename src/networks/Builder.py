@@ -28,6 +28,7 @@ class GlimmerNet(LightningNet):
         self.net_modules = net_kwargs["modules"]
         self.reduction = net_kwargs["stem_reduction"]
         self.resolution = net_kwargs["resolution"]
+        self.dropout = optim_kwargs['dropout']
         
         assert len(self.depths) == len(self.widths) == len(self.dilations), "depths, dilations and widths must have the same length"
 
@@ -60,7 +61,8 @@ class GlimmerNet(LightningNet):
         self.classifier = nn.Sequential(
             nn.AdaptiveAvgPool2d((1, 1)),
             nn.Flatten(),
-            nn.Linear(prev_channel_dim, self.output_classes)
+            nn.Linear(prev_channel_dim, self.output_classes),
+            nn.Dropout(p=self.dropout )
         )
 
         del self.stages
