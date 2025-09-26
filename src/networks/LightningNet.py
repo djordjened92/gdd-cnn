@@ -221,7 +221,9 @@ class LightningNet(L.LightningModule):
     def on_train_epoch_end(self):
         if not self.training_step_outputs:
             return
-        self.base_logger(self.training_step_outputs, mode='train')        
+        acc1, acc2, f1 = self.base_logger(self.training_step_outputs, mode='train')
+        self.log('train/f1', f1.item(), prog_bar=True, on_epoch=True, logger=True)
+        self.log('train/acc1', acc1.item(), prog_bar=True, on_epoch=True, logger=True)
         self.training_step_outputs.clear()
 
         if hasattr(self.trainer.train_dataloader.dataset, 'k_folds'):
@@ -233,8 +235,8 @@ class LightningNet(L.LightningModule):
         if not self.validation_step_outputs:
             return
         acc1, acc2, f1 = self.base_logger(self.validation_step_outputs, mode='val')
-        self.log('val/f1', f1.item(), prog_bar=True)
-        self.log('val/acc1', acc1.item(), prog_bar=True)
+        self.log('val/f1', f1.item(), prog_bar=True, on_epoch=True, logger=True)
+        self.log('val/acc1', acc1.item(), prog_bar=True, on_epoch=True, logger=True)
         
         self.best_accuracy = max(self.best_accuracy, acc1.item()) if self.current_epoch > 0 else 0. # prevent the bug of initial acc1=1
         self.best_f1 = max(self.best_f1, f1) if self.current_epoch > 0 else 0. # prevent the bug of initial f1=1
@@ -248,6 +250,8 @@ class LightningNet(L.LightningModule):
 
     def on_test_epoch_end(self):
         acc1, acc2, f1 = self.base_logger(self.test_step_outputs, mode='test')
+        self.log('test/f1', f1.item(), prog_bar=True, on_epoch=True, logger=True)
+        self.log('test/acc1', acc1.item(), prog_bar=True, on_epoch=True, logger=True)
         
         self.best_accuracy = max(self.best_accuracy, acc1.item())
         self.best_f1 = max(self.best_f1, f1)
@@ -281,7 +285,6 @@ class LightningNet(L.LightningModule):
             self.logger.experiment.add_scalar(f'{mode}/learning_rate', learning_rate, self.current_epoch)
 
         self.logger.experiment.add_scalar(f'{mode}/loss', loss, self.current_epoch)
-        self.logger.experiment.add_scalar(f'{mode}/acc1', acc1.item(), self.current_epoch)
         self.logger.experiment.add_scalar(f'{mode}/acc{self.getAccuracyTopX.top_k}', accX.item(), self.current_epoch)
         
         return acc1, accX, f1
