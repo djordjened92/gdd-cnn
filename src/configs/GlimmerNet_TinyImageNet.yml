@@ -1,13 +1,13 @@
 # GlimmerNet configuration file
 
 # Base Settings
-num_epochs: 400
+num_epochs: 300
 batch_size: 128
 seed: 22
 experiment_name: GlimmerNet_TinyImageNet
 main_runs_folder: /home/user/src/runs/TinyImageNet
 pin_memory: False
-mode: train
+mode: test
 
 # Logging
 tensorboard: True
@@ -33,13 +33,13 @@ lightning_precision: 32-true
 network: GlimmerNet
 input_channels: 3
 stem_reduction: 1
-ckpts_path: runs/TinyImageNet/GlimmerNet_TinyImageNet/version_1/checkpoints/best_model_val_f1.ckpt
+ckpts_path: runs/TinyImageNet/GlimmerNet_TinyImageNet/version_19/checkpoints/best_model_val_acc1.ckpt
 
 # Optimization parameters
 optimizer: adamw
 scheduler: cosine # before changing the scheduler, check how it works on the PyTorch documentation
 scheduler_per_epoch: True
-learning_rate: 0.001
+learning_rate: 0.002
 learning_rate_decay: 0.975
 learning_rate_decay_steps: 2
 min_learning_rate: 0.00001
@@ -48,9 +48,9 @@ warmup_steps: -1
 weight_decay: 0.00001
 weight_decay_end: 0.00001
 update_freq: 1
-label_smoothing: 0.0
+label_smoothing: 0.1
 model_ema: False
-dropout: 0.2
+dropout: 0.1
 alpha: 0.9
 momentum: 0.9
 class_weights: null

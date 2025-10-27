@@ -97,11 +97,11 @@ class GroupedDilationStage(nn.Module):
         return out
 
 def create_glimmernet(net_kwargs: dict, criterion: nn.Module, optim_kwargs:dict, ckpt_path: str = None):
-    net_kwargs['modules'] = [GroupedDilationBlock, GroupedDilationBlock, GroupedDilationBlock, GroupedDilationBlock]
-    net_kwargs['depths'] = [4, 4, 4, 1]
-    net_kwargs['widths'] = [40, 80, 160, 240]
-    net_kwargs['dilations'] = [[1, 2, 2, 3], [1, 2, 2, 3], [1, 2, 2, 3], [1, 2, 2, 3]]
-    net_kwargs['poolings'] = [nn.MaxPool2d, nn.MaxPool2d, nn.MaxPool2d, nn.AvgPool2d]
+    net_kwargs['modules'] = [GroupedDilationBlock, GroupedDilationBlock, GroupedDilationBlock, GroupedDilationBlock, GroupedDilationBlock, GroupedDilationBlock]
+    net_kwargs['depths'] = [6, 5, 5, 4, 3, 1]
+    net_kwargs['widths'] = [40, 80, 160, 320, 640, 640]
+    net_kwargs['dilations'] = [[1, 1, 2, 2, 3], [1, 1, 2, 2, 3], [1, 1, 2, 2, 3], [1, 1, 2, 2, 3], [1, 1, 2, 2, 3], [1, 1, 2, 2, 3]]
+    net_kwargs['poolings'] = [nn.MaxPool2d, nn.MaxPool2d, nn.MaxPool2d, nn.MaxPool2d, nn.MaxPool2d, nn.AvgPool2d]
 
     if ckpt_path is not None:
         model = GlimmerNet.load_from_checkpoint(ckpt_path, net_kwargs=net_kwargs, criterion=criterion, optim_kwargs=optim_kwargs)

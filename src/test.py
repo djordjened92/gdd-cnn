@@ -37,12 +37,18 @@ def test(trainer, model, args: argparse.Namespace) -> None:
     device = torch.device(f"cuda:{str(get_rank())}" if torch.cuda.is_available() else "cpu")
     args.accelerator = 'gpu' if torch.cuda.is_available() else 'cpu'
 
-    testset = get_dataset(dataset=args.dataset,
-                          data_path=args.data_path,
-                          target_size=target_size,
+    norm_mean_std = ()
+    if args.dataset.upper() == "CIFAR100":
+        norm_mean_std=((0.5071, 0.4865, 0.4409), (0.2673, 0.2564, 0.2762))
+    elif args.dataset.upper() == "TINYIMAGENET":
+        norm_mean_std = ((0.4802, 0.4481, 0.3975), (0.2302, 0.2265, 0.2262))
+
+    testset = get_dataset(dataset=args.dataset, 
+                          data_path=args.data_path, 
+                          target_size=target_size,  
                           num_classes=args.num_classes,
-                          subset='test',
-                          seed=args.seed,
+                          subset='val', 
+                          seed=args.seed, 
                           split=args.split,
                           k_folds=args.k_folds,
                           no_validation=args.no_validation)
@@ -51,15 +57,16 @@ def test(trainer, model, args: argparse.Namespace) -> None:
         raise ValueError(f"Number of classes in config file ({args.num_classes}) does not match the number of classes in the dataset ({testset.num_classes})")
     
     test_loader = get_dataloader(dataset=testset,
-                                 target_size=target_size,
-                                 batch_size=args.batch_size,
-                                 shuffle=False,
-                                 subset='test',
-                                 transforms=None,
-                                 num_workers=args.num_workers,
-                                 persistent_workers=args.persistent_workers,
-                                 pin_memory=args.pin_memory,
-                                 device=device)
+                                target_size=target_size,
+                                batch_size=args.batch_size,
+                                shuffle=False,
+                                subset='val',
+                                transforms=None,
+                                norm_mean_std=norm_mean_std,
+                                num_workers=args.num_workers,
+                                persistent_workers=args.persistent_workers,
+                                pin_memory=args.pin_memory,
+                                device=device)
     
     net_kwargs = extract_net_params(args)
     optim_kwargs = extract_optim_params(args)
