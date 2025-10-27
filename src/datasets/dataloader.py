@@ -33,7 +33,6 @@ class CollateFnWrapper:
 
     def __call__(self, batch):
         images, labels = zip(*batch)
-
         if self.subset == 'train' and self.transforms is not None:
             if isinstance(self.transforms, AlbuCompose):
                 images = np.stack([self.transforms(image=img.permute(1, 2, 0).detach().cpu().numpy())["image"] for img in images])
@@ -44,7 +43,7 @@ class CollateFnWrapper:
                 images = [self.resize(torchvision.transforms.RandomErasing(p=0.25, scale=(0.02, 0.2))(self.to_tensor(img))) for img in images]
                 images = torch.stack(images).to(self.device).to(torch.float32)
         else:
-            images = [self.resize(self.to_tensor(img)) for img in images]
+            images = [self.resize(img if isinstance(img, torch.Tensor) else self.to_tensor(img)) for img in images]
             images = torch.stack(images).to(self.device).to(torch.float32)
         labels = torch.tensor(list(labels), device=self.device)
 

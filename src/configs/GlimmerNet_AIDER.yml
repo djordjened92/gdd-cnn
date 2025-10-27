@@ -7,22 +7,22 @@ seed: 22
 experiment_name: GlimmerNet_AIDERV
 main_runs_folder: /home/user/src/runs/AIDER
 pin_memory: False
-mode: test
+mode: train
 
 # Logging
 tensorboard: True
 wandb: False # if True, you need to set the WANDB_API_KEY environment variable
 
 # Dataset and Data loading
-num_workers: 0
-persistent_workers: False
+num_workers: 12
+persistent_workers: True
 dataset: AIDER
 data_path: ./data/AIDER
 num_classes: 5
 img_height: 240
 img_width: 240
 augment: AIDER
-k_folds: 0
+k_folds: 5
 split: proportional
 no_validation: True
 
@@ -30,7 +30,7 @@ no_validation: True
 lightning_precision: 32-true
 
 # Model settings
-network: GDNet
+network: GlimmerNet
 input_channels: 3
 stem_reduction: 4
 ckpts_path: ./runs/AIDER/GDNet_AIDERV/version_0/checkpoints/last.ckpt
@@ -50,9 +50,11 @@ weight_decay_end: 0.00001
 update_freq: 1
 label_smoothing: 0.0
 model_ema: False
+dropout: 0.0
 alpha: 0.9
 momentum: 0.9
 class_weights: null
+acc_avg_type: weighted
 
 # Export
 onnx_opset_version: 17

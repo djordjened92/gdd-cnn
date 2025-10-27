@@ -50,6 +50,7 @@ weight_decay_end: 0.00001
 update_freq: 1
 label_smoothing: 0.0
 model_ema: False
+dropout: 0.0
 alpha: 0.9
 momentum: 0.9
 class_weights: null
