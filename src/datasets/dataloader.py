@@ -43,7 +43,7 @@ class CollateFnWrapper:
                 images = [self.resize(torchvision.transforms.RandomErasing(p=0.25, scale=(0.02, 0.2))(self.to_tensor(img))) for img in images]
                 images = torch.stack(images).to(self.device).to(torch.float32)
         else:
-            images = [self.resize(img if isinstance(img, torch.Tensor) else self.to_tensor(img)) for img in images]
+            images = [self.resize(img / 255. if isinstance(img, torch.Tensor) else self.to_tensor(img)) for img in images]
             images = torch.stack(images).to(self.device).to(torch.float32)
         labels = torch.tensor(list(labels), device=self.device)
 
