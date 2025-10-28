@@ -78,16 +78,16 @@ class LightningNet(L.LightningModule):
 
     def on_train_epoch_start(self):
         self.training_step_outputs = []
-        if hasattr(self.trainer.train_dataloader.dataset, 'k_folds'):
-            if self.trainer.train_dataloader.dataset.k_folds > 0:
-                if self.current_epoch != 0:
-                    self.k_folds = self.trainer.train_dataloader.dataset.k_folds
-                    self.current_fold = self.trainer.train_dataloader.dataset.current_fold
-                    train_indices = self.trainer.train_dataloader.dataset.folds[self.current_fold][0].tolist()
-                    val_indices = self.trainer.train_dataloader.dataset.folds[self.current_fold][1].tolist()
+        # if hasattr(self.trainer.train_dataloader.dataset, 'k_folds'):
+        #     if self.trainer.train_dataloader.dataset.k_folds > 0:
+        #         if self.current_epoch != 0:
+        #             self.k_folds = self.trainer.train_dataloader.dataset.k_folds
+        #             self.current_fold = self.trainer.train_dataloader.dataset.current_fold
+        #             train_indices = self.trainer.train_dataloader.dataset.folds[self.current_fold][0].tolist()
+        #             val_indices = self.trainer.train_dataloader.dataset.folds[self.current_fold][1].tolist()
 
-                    self.trainer.train_dataloader.dataset.indices = train_indices
-                    self.trainer.val_dataloaders.dataset.indices = val_indices
+        #             self.trainer.train_dataloader.dataset.indices = train_indices
+        #             self.trainer.val_dataloaders.dataset.indices = val_indices
 
     def on_validation_epoch_start(self):
         self.validation_step_outputs = []
@@ -226,10 +226,10 @@ class LightningNet(L.LightningModule):
         self.log('train/acc1', acc1.item(), prog_bar=True, on_epoch=True, logger=True)
         self.training_step_outputs.clear()
 
-        if hasattr(self.trainer.train_dataloader.dataset, 'k_folds'):
-            if self.trainer.train_dataloader.dataset.k_folds > 0:
-                self.current_fold = (self.current_fold + 1) % self.k_folds if self.current_epoch > 0 else 0
-                self.trainer.train_dataloader.dataset.set_kfold(self.current_fold)
+        # if hasattr(self.trainer.train_dataloader.dataset, 'k_folds'):
+        #     if self.trainer.train_dataloader.dataset.k_folds > 0:
+        #         self.current_fold = (self.current_fold + 1) % self.k_folds if self.current_epoch > 0 else 0
+        #         self.trainer.train_dataloader.dataset.set_kfold(self.current_fold)
 
     def on_validation_epoch_end(self):
         if not self.validation_step_outputs:
