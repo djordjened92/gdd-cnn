@@ -103,6 +103,7 @@ def train(args: argparse.Namespace) -> None:
         loggers.append(wandb_logger)
     
     if is_main_process():
+        model.eval()
         inspection = summary(model, input_size=(args.batch_size, args.input_channels, *target_size), mode="train")
         logging.info(f"is cuda available? {torch.cuda.is_available()}")
         logging.info(f"Using device {device}")
@@ -120,6 +121,7 @@ def train(args: argparse.Namespace) -> None:
         flops = FlopCountAnalysis(model, torch.rand((1, 3, args.img_height, args.img_width)).to(device))
         print("FLOPs:", flops.total())
         logging.info(f"FLOPs: {flops.total()}")
+        model.train()
 
     best_val_acc1_checkpoint = ModelCheckpoint(
         filename="best_model_val_acc1",
@@ -150,7 +152,7 @@ def train(args: argparse.Namespace) -> None:
                         precision=args.lightning_precision,
                         deterministic=True,
                         logger=loggers,
-                        check_val_every_n_epoch=4,
+                        # check_val_every_n_epoch=4,
                         callbacks=[best_val_checkpoint, best_val_acc1_checkpoint, last_model_checkpoint],
                         )
     
