@@ -52,11 +52,11 @@ class AggDownSample(nn.Module):
     def aggregate(self, x: torch.Tensor, dense_x: torch.Tensor) -> torch.Tensor:
         # Recombine channel dimension to have
         # fmaps from different dilations grouped
-        B, C, H, W = x.shape
-        group_size = C // self.dilations_len
-        x = x.view(B, self.dilations_len, group_size, H, W)
-        x.swapaxes_(1, 2)
-        x = x.reshape(B, C, H, W)
+        # B, C, H, W = x.shape
+        # group_size = C // self.dilations_len
+        # x = x.view(B, self.dilations_len, group_size, H, W)
+        # x.swapaxes_(1, 2)
+        # x = x.reshape(B, C, H, W)
 
         # Mix Concatenation
         b, c, h, w = x.size()

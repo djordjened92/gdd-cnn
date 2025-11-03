@@ -28,6 +28,29 @@ class Stem(nn.Module):
         x = self.stem(x)
         return x
 
+class TakuBlock(nn.Module):
+    def __init__(self, in_channels: int, out_channels: int, kernel_size: int, stride: int, padding: int, dilation: int) -> None:
+        super(TakuBlock, self).__init__()
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+        self.kernel_size = kernel_size
+        self.stride = stride
+        self.padding = padding
+        self.dilation = dilation
+
+        self.skip_conn = nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=stride) if in_channels != out_channels else nn.Identity()
+
+        self.bn = nn.BatchNorm2d(in_channels)
+        self.dwconv = nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, stride=stride, padding=padding, dilation=dilation, groups=out_channels if in_channels==out_channels else 1)
+        self.activation = nn.ReLU6()
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        skip = self.skip_conn(x)
+        x = self.bn(self.dwconv(x))
+        x = self.activation(x) + skip
+
+        return x
+
 class GroupedDilationBlock(nn.Module):
     def __init__(self,
                  in_channels,

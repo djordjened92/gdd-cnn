@@ -4,7 +4,7 @@ from torch import nn
 import gc
 import logging
 
-from networks.Modules import Stem, GroupedDilationBlock
+from networks.Modules import Stem, GroupedDilationBlock, TakuBlock
 from networks.LightningNet import LightningNet
 from networks.AggDownSample import AggDownSample
 
@@ -86,7 +86,8 @@ class GroupedDilationStage(nn.Module):
                                       hidden_channels,
                                       kernel_size=3,
                                       stride=1,
-                                      dilations=dilations))
+                                      padding=1,
+                                      dilation=1))
 
         self.stage = nn.Sequential(*self.layers)
         self.aggregate_downsample = AggDownSample(resolution, in_channels, hidden_channels, out_channels, len(dilations), kernel_size=2, stride=2, pooling=pooling)
@@ -97,9 +98,9 @@ class GroupedDilationStage(nn.Module):
         return out
 
 def create_glimmernet(net_kwargs: dict, criterion: nn.Module, optim_kwargs:dict, ckpt_path: str = None):
-    net_kwargs['modules'] = [GroupedDilationBlock, GroupedDilationBlock, GroupedDilationBlock, GroupedDilationBlock]
-    net_kwargs['depths'] = [4, 4, 4, 1]
-    net_kwargs['widths'] = [40, 80, 160, 240]
+    net_kwargs['modules'] = [TakuBlock, TakuBlock, TakuBlock, TakuBlock]
+    net_kwargs['depths'] = [1, 1, 1, 1]
+    net_kwargs['widths'] = [8, 16, 24, 120]
     net_kwargs['dilations'] = [[1, 2, 2, 3], [1, 2, 2, 3], [1, 2, 2, 3], [1, 2, 2, 3]]
     net_kwargs['poolings'] = [nn.MaxPool2d, nn.MaxPool2d, nn.MaxPool2d, nn.AvgPool2d]
 
