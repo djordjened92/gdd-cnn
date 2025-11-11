@@ -1,0 +1,12 @@
+onnx_model_path: "exports/GlimmerNet_AIDERV2_fp32_opset17.onnx"
+tensorrt_engine_path: "exports/GlimmerNet_AIDERV2_fp32_opset17.engine"
+use_tensorrt: true
+fp16_mode: false
+dataset_size: 2600
+img_size:
+  - 3
+  - 224
+  - 224
+num_classes: 4
+batch_size: 1
+old_jetpack: false

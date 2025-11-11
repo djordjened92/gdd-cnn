@@ -48,6 +48,7 @@ class GroupedDilationBlock(nn.Module):
 
         convs = []
         for d in self.dilations:
+            # pad = ((kernel_size - 1) * d) // 2 # for onnx export purpose
             convs.append(nn.Conv2d(self.group_size,
                                    self.out_group_size,
                                    kernel_size,
