@@ -1,6 +1,8 @@
 # GlimmerNet: Lightweight Grouped Dilated Depthwise Convolutions for UAV-Based Emergency Monitoring
 
-This codebase represents implementation of the **GlimmerNet** paper. The [TakuNet](https://github.com/DanielRossi1/TakuNet) implementation is used as a framework for training and evaluation purposes. Our main changes are related to the building blocks of the Neural Network, located in the `src/networks`. The **GlimmerNet** achieved the best F1-score with the lowest number of parameters among concurents, as shown in the results table:
+This codebase represents implementation of the [**GlimmerNet**](https://www.arxiv.org/pdf/2512.07391) paper. 
+![BBlocks](assets/glimmer_net_gddwc.png)
+The [TakuNet](https://github.com/DanielRossi1/TakuNet) implementation is used as a framework for training and evaluation purposes. Our main changes are related to the building blocks of the Neural Network, located in the `src/networks`. The **GlimmerNet** achieved the best F1-score with the lowest number of parameters among concurents, as shown in the results table:
 ![Results](assets/glimmer_net_results.png)
 
 ## Create docker image
